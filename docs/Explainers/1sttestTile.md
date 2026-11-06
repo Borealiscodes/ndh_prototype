@@ -3,8 +3,8 @@
 “Kids! Go brush your teeth and get some sleep! 🛏️💤
 But right before you close your eyes, take a look at what our local space heater just proved on your desk silicon!
 
-<pre
-  
+<pre>
+
 +-------------------------------------------------------------+
 
 |                BILL NYE'S TILE ENCLAVE EXPERIMENT           |
