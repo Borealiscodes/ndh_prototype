@@ -1,7 +1,7 @@
 pub mod symplectic;
 
 use symplectic::{
-    SymplecticState, TernaryTrit, TernaryVector80, DIM_80, DIM_40,
+    SymplecticState, TernaryTrit, TernaryVector80, QuestOperator80x80, DIM_80, DIM_40,
 };
 
 pub use symplectic::{
@@ -10,7 +10,9 @@ pub use symplectic::{
     evaluate_safe_radial_diffusion,
     apply_canonical_shear, 
     tikhonov_regularize_diagonal,
-    apply_spatial_sigma_delta_loop, // Added symbol tracking
+    apply_spatial_sigma_delta_loop,
+    apply_quest_operator_80d,       // Quest Algebra execution binding
+    compose_quest_operators_80d,     // Quest Algebra compilation binding
 };
 
 #[repr(C, align(64))]
@@ -29,4 +31,3 @@ pub extern "C" fn initialize_payload(payload: *mut TrackingPayload) {
         p.matrix = [0.0; DIM_80 * DIM_80];
     }
 }
-
