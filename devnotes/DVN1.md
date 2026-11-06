@@ -1,5 +1,3 @@
-Here is a comprehensive Developer Note formatted specifically for your repository’s devnotes/ folder. This document explicitly details the transition from structural validation to non-trivial semantic execution, mapping out the exact memory allocation paths for your development stack.
-
 DEVNOTE-001: Architectural Transition from Structural FFI Validation to Semantic Non-Triviality
 
 # Altitude: 🟩 A3–A5 (Engineering Architecture & Memory Layouts)
