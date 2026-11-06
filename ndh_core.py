@@ -24,6 +24,10 @@ class QuestOperator80x80(ctypes.Structure):
     """Maps directly to a dense, nested 80x80 ternary operator grid in Rust memory."""
     _fields_ = [("rows", TernaryVector80 * 80)]
 
+class RasaTensor80x80(ctypes.Structure):
+    """Maps directly to a dense 80x80 ternary emotional velocity tracking grid in Rust memory."""
+    _fields_ = [("matrix", TernaryVector80 * 80)]
+
 class NDHEngine:
     def __init__(self):
         # Locate shared object substrate
@@ -80,6 +84,13 @@ class NDHEngine:
             ctypes.POINTER(QuestOperator80x80), # Operator A
             ctypes.POINTER(QuestOperator80x80), # Operator B
             ctypes.POINTER(QuestOperator80x80)  # Output combined narrative operator matrix
+        ]
+
+        # Phase V Rasa Curvature Flow Operator Entry Point
+        self.lib.apply_rasa_curvature_flow.argtypes = [
+            ctypes.POINTER(RasaTensor80x80),    # Emotional-Tensor operator reference
+            ctypes.POINTER(SymplecticState),    # Active Symplectic phase space state (mutates p)
+            ctypes.c_double                     # Curvature scale factor (eta)
         ]
 
     @staticmethod
