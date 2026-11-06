@@ -186,4 +186,79 @@ pub extern "C" fn apply_spatial_sigma_delta_loop(
     }
 }
 
+//! Phase IV Quest Algebra: Operator-Based Narrative Topology & State Transitions
+
+/// A structure representing a discrete narrative operator layer.
+/// When contracted against a state vector, it shifts narrative curvature coordinates.
+#[repr(C, align(64))]
+pub struct QuestOperator80x80 {
+    pub rows: [TernaryVector80; DIM_80],
+}
+
+/// Applies a Quest Algebra Operator to an input narrative state vector, 
+/// generating a transformed output state vector.
+/// 
+/// Formula: State_{t+1} = Operator_k \cdot State_t
+#[no_mangle]
+pub extern "C" fn apply_quest_operator_80d(
+    operator: *const QuestOperator80x80,
+    current_state: *const f64,
+    next_state: *mut f64,
+) {
+    if operator.is_null() || current_state.is_null() || next_state.is_null() {
+        return;
+    }
+
+    unsafe {
+        // Quest Algebra maps directly to our highly efficient ternary matrix contractions
+        let matrix_ptr = &(*operator).rows as *const TernaryVector80;
+        ternary_matrix_multiply_80d(matrix_ptr, current_state, next_state);
+    }
+}
+
+/// Combines two sequential Quest Operators into a single unified composite narrative gate.
+/// Formula: Composite = Operator_B \cdot Operator_A (Non-commutative matrix product)
+#[no_mangle]
+pub extern "C" fn compose_quest_operators_80d(
+    op_a: *const QuestOperator80x80,
+    op_b: *const QuestOperator80x80,
+    op_out: *mut QuestOperator80x80,
+) {
+    if op_a.is_null() || op_b.is_null() || op_out.is_null() {
+        return;
+    }
+
+    unsafe {
+        let rows_a = &(*op_a).rows;
+        let rows_b = &(*op_b).rows;
+        let out_rows = &mut (*op_out).rows;
+
+        // Perform matrix-matrix multiplication optimized via integer accumulations
+        for r in 0..DIM_80 {
+            // Reconstruct a row from Operator A as a continuous f64 row buffer
+            let mut row_a_f64 = [0.0; DIM_80];
+            for c in 0..DIM_80 {
+                row_a_f64[c] = rows_a[r].data[c] as i8 as f64;
+            }
+
+            // Contract it against the ternary columns of Operator B
+            for c in 0..DIM_80 {
+                let mut accumulator = 0.0;
+                for k in 0..DIM_80 {
+                    let b_val = rows_b[k].data[c] as i8 as f64;
+                    accumulator += row_a_f64[k] * b_val;
+                }
+
+                // Threshold the composite back into the strict Base-3 Ternary Alphabet
+                out_rows[r].data[c] = if accumulator < -0.33 {
+                    TernaryTrit::Negative
+                } else if accumulator > 0.33 {
+                    TernaryTrit::Positive
+                } else {
+                    TernaryTrit::Zero
+                };
+            }
+        }
+    }
+}
 
