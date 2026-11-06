@@ -1,7 +1,7 @@
 pub mod symplectic;
 
 use symplectic::{
-    SymplecticState, TernaryTrit, TernaryVector80, QuestOperator80x80, DIM_80, DIM_40,
+    SymplecticState, TernaryTrit, TernaryVector80, QuestOperator80x80, RasaTensor80x80, DIM_80, DIM_40,
 };
 
 pub use symplectic::{
@@ -11,8 +11,9 @@ pub use symplectic::{
     apply_canonical_shear, 
     tikhonov_regularize_diagonal,
     apply_spatial_sigma_delta_loop,
-    apply_quest_operator_80d,       // Quest Algebra execution binding
-    compose_quest_operators_80d,     // Quest Algebra compilation binding
+    apply_quest_operator_80d,
+    compose_quest_operators_80d,
+    apply_rasa_curvature_flow, // Active Emotional-Tensor tracking binding
 };
 
 #[repr(C, align(64))]
