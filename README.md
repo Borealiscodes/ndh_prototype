@@ -1,4 +1,13 @@
-This is a prototype for testing and development 
+⚠️ Critical Engineering Disclosure & Operational Context
+
+
+
+
+This repository and its accompanying Request for Comments (RFC-004) function strictly as structural blueprints, mathematical specifications, and clean-room implementation sandboxes.
+
+While the source files—comprising native Rust kernels (CDylib), cross-enclave compiler gates (build.rs), Python C-FFI marshalling pipelines (ndh_core.py), and Lean 4 type-invariant assertions—contain compile-ready syntax and complete mathematical structures, the architecture has not been executed or stress-tested live on physical machinery or specialized hardware substrates.
+
+The software framework archived here serves as a high-altitude prototype designed to test the compilation integrity, pointer alignment, and formal type safety of 1.58-bit ternary computing systems before flashing the logic onto physical silicon or automated hardware stepper motors [0.1.1-0.1.2].
 
 # 🪐 Version 4.0 Sovereign Sandbox: Project Blueprint & Execution Manifesto
 
