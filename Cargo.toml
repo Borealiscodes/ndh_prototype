@@ -2,9 +2,7 @@
 name = "ndh_core_rust"
 version = "4.0.0"
 edition = "2021"
+build = "build.rs" # Forces Rust to execute the verification gate first
 
 [lib]
 crate-type = ["cdylib"]
-
-[dependencies]
-# No external crates required - absolute zero-allocation footprint
