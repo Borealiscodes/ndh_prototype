@@ -48,13 +48,21 @@ class NDHEngine:
         self.lib.evaluate_safe_radial_diffusion.argtypes = [ctypes.c_double]
         self.lib.evaluate_safe_radial_diffusion.restype = ctypes.c_double
         
-        self.lib.ternary_dot_product_80d.argtypes = [ctypes.POINTER(TernaryVector80), ctypes.pointer(ctypes.c_double)]
+        # Explicit typing for continuous-vector dot product tracks
+        self.lib.ternary_dot_product_80d.argtypes = [ctypes.POINTER(TernaryVector80), ctypes.POINTER(ctypes.c_double)]
         self.lib.ternary_dot_product_80d.restype = ctypes.c_double
         
         self.lib.ternary_matrix_multiply_80d.argtypes = [
             ctypes.POINTER(TernaryVector80), # Array pointer of 80 discrete rows
             ctypes.POINTER(ctypes.c_double), # Input 80D float state vector
             ctypes.POINTER(ctypes.c_double)  # Output 80D float destination vector
+        ]
+
+        # Version 4.0 First-Order Spatial Sigma-Delta Error Diffusion Entry Point
+        self.lib.apply_spatial_sigma_delta_loop.argtypes = [
+            ctypes.POINTER(ctypes.c_double), # Continuous input vector tensor (80 floats)
+            ctypes.POINTER(ctypes.c_int8),   # Destination ternary trit tracking buffer (80 elements)
+            ctypes.POINTER(ctypes.c_double)  # Pre-generated triangular dither matrix field
         ]
 
     @staticmethod
