@@ -20,6 +20,10 @@ class TernaryVector80(ctypes.Structure):
     """Maps directly to the repr(i8) array sequences in the native Rust core."""
     _fields_ = [("data", ctypes.c_int8 * 80)]
 
+class QuestOperator80x80(ctypes.Structure):
+    """Maps directly to a dense, nested 80x80 ternary operator grid in Rust memory."""
+    _fields_ = [("rows", TernaryVector80 * 80)]
+
 class NDHEngine:
     def __init__(self):
         # Locate shared object substrate
@@ -63,6 +67,19 @@ class NDHEngine:
             ctypes.POINTER(ctypes.c_double), # Continuous input vector tensor (80 floats)
             ctypes.POINTER(ctypes.c_int8),   # Destination ternary trit tracking buffer (80 elements)
             ctypes.POINTER(ctypes.c_double)  # Pre-generated triangular dither matrix field
+        ]
+
+        # Quest Algebra Operator Endpoint Declarations
+        self.lib.apply_quest_operator_80d.argtypes = [
+            ctypes.POINTER(QuestOperator80x80), # Narrative transformation operator matrix
+            ctypes.POINTER(ctypes.c_double),    # Current 80D narrative trajectory tracking state
+            ctypes.POINTER(ctypes.c_double)     # Evaluated next-state trajectory destination
+        ]
+
+        self.lib.compose_quest_operators_80d.argtypes = [
+            ctypes.POINTER(QuestOperator80x80), # Operator A
+            ctypes.POINTER(QuestOperator80x80), # Operator B
+            ctypes.POINTER(QuestOperator80x80)  # Output combined narrative operator matrix
         ]
 
     @staticmethod
