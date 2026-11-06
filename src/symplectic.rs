@@ -262,3 +262,52 @@ pub extern "C" fn compose_quest_operators_80d(
     }
 }
 
+//! Phase V Rasa Geometry: Emotional-Tensor Fields & Curvature Flow Operators
+
+/// A structure representing a dense Rasa Emotional-Tensor matrix layer.
+/// Operates exclusively as a geometric multiplier tracking emotional velocity.
+#[repr(C, align(64))]
+pub struct RasaTensor80x80 {
+    pub matrix: [TernaryVector80; DIM_80],
+}
+
+/// Applies a Rasa Curvature-Flow transformation to the Symplectic Phase Space.
+/// Mutates the canonical momentum parameters (p) based on emotional and aesthetic force.
+/// 
+/// Formula: p_{i} = p_{i} + \eta \cdot \sum (Rasa_{ij} \cdot q_{j})
+#[no_mangle]
+pub extern "C" fn apply_rasa_curvature_flow(
+    rasa_operator: *const RasaTensor80x80,
+    state: *mut SymplecticState,
+    scaling_eta: f64,
+) {
+    if rasa_operator.is_null() || state.is_null() {
+        return;
+    }
+
+    unsafe {
+        let s = &mut *state;
+        let tensor_rows = &(*rasa_operator).matrix;
+
+        // Process momentum parameters across the 40-dimensional half-space boundary
+        for i in 0..DIM_40 {
+            let mut emotional_gradient: f64 = 0.0;
+
+            // Contract row i of the tensor against the verified Position tracking fields (q)
+            for j in 0..DIM_40 {
+                let trit_modifier = tensor_rows[i].data[j] as i8 as f64;
+                emotional_gradient += s.q[j] * trit_modifier;
+            }
+
+            // Dynamically alter the momentum velocity vector based on emotional gravity
+            s.p[i] += scaling_eta * emotional_gradient;
+
+            // Enforce hard threshold safety bounds directly on the active phase space
+            if s.p[i] < -10.0 {
+                s.p[i] = -10.0;
+            } else if s.p[i] > 10.0 {
+                s.p[i] = 10.0;
+            }
+        }
+    }
+}
