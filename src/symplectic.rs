@@ -136,3 +136,54 @@ pub extern "C" fn ternary_matrix_multiply_80d(
         }
     }
 }
+//! Phase III Mitigations: Spatial Sigma-Delta Error-Diffusion Loops
+
+/// Appends a first-order spatial sigma-delta modulation pass across a continuous sequence.
+/// Injects stochastic triangular dither to decorrelate high-frequency rounding errors,
+/// diffusing the resulting error matrix (E) forward to preserve linear independence.
+/// Matches the spec: mod.rs first-order spatial loops.
+#[no_mangle]
+pub extern "C" fn apply_spatial_sigma_delta_loop(
+    input_floats: *const f64,
+    output_trits: *mut TernaryTrit,
+    dither_weights: *const f64,
+) {
+    if input_floats.is_null() || output_trits.is_null() || dither_weights.is_null() {
+        return;
+    }
+
+    unsafe {
+        let inputs = std::slice::from_raw_parts(input_floats, DIM_80);
+        let outputs = std::slice::from_raw_parts_mut(output_trits, DIM_80);
+        let dither = std::slice::from_raw_parts(dither_weights, DIM_80);
+
+        // Persistent error accumulator registry for spatial error-diffusion
+        let mut spatial_error_feedback: f64 = 0.0;
+
+        for i in 0..DIM_80 {
+            // 1. Synthesize input vector element with upstream error feedback loop
+            let perturbed_activation = inputs[i] + spatial_error_feedback;
+
+            // 2. Inject triangular dither component to break up deterministic patterns
+            let continuous_target = perturbed_activation + (dither[i] * 0.05);
+
+            // 3. Force decision boundary mapping into the Ternary Alphabet
+            let quantized_trit = if continuous_target < -0.33 {
+                TernaryTrit::Negative
+            } else if continuous_target > 0.33 {
+                TernaryTrit::Positive
+            } else {
+                TernaryTrit::Zero
+            };
+
+            // 4. Record output array element
+            outputs[i] = quantized_trit;
+
+            // 5. Diffuse the quantization error directly forward to the next index parameter
+            let numeric_trit_value = quantized_trit as i8 as f64;
+            spatial_error_feedback = perturbed_activation - numeric_trit_value;
+        }
+    }
+}
+
+
