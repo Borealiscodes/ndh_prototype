@@ -16,6 +16,10 @@ class TrackingPayload(ctypes.Structure):
         ("matrix", ctypes.c_double * 6400) # 80x80 flattened array
     ]
 
+class TernaryVector80(ctypes.Structure):
+    """Maps directly to the repr(i8) array sequences in the native Rust core."""
+    _fields_ = [("data", ctypes.c_int8 * 80)]
+
 class NDHEngine:
     def __init__(self):
         # Locate shared object substrate
@@ -36,8 +40,22 @@ class NDHEngine:
 
         # Register function pointer serialization boundaries
         self.lib.initialize_payload.argtypes = [ctypes.POINTER(TrackingPayload)]
+        
         self.lib.apply_canonical_shear.argtypes = [ctypes.POINTER(SymplecticState), ctypes.c_double]
+        
         self.lib.tikhonov_regularize_diagonal.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.c_double]
+        
+        self.lib.evaluate_safe_radial_diffusion.argtypes = [ctypes.c_double]
+        self.lib.evaluate_safe_radial_diffusion.restype = ctypes.c_double
+        
+        self.lib.ternary_dot_product_80d.argtypes = [ctypes.POINTER(TernaryVector80), ctypes.pointer(ctypes.c_double)]
+        self.lib.ternary_dot_product_80d.restype = ctypes.c_double
+        
+        self.lib.ternary_matrix_multiply_80d.argtypes = [
+            ctypes.POINTER(TernaryVector80), # Array pointer of 80 discrete rows
+            ctypes.POINTER(ctypes.c_double), # Input 80D float state vector
+            ctypes.POINTER(ctypes.c_double)  # Output 80D float destination vector
+        ]
 
     @staticmethod
     def stochastic_triangular_dither() -> float:
@@ -47,7 +65,7 @@ class NDHEngine:
         return r1 + r2
 
     def base3_quantize(self, val: float) -> float:
-        """Forces continuous continuous clouds into an unyielding ternary alphabet."""
+        """Forces continuous clouds into an unyielding ternary alphabet."""
         dithered = val + self.stochastic_triangular_dither() * 0.05
         if dithered < -0.33:
             return -1.0
